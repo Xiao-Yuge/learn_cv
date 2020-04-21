@@ -31,6 +31,7 @@
 <img src='./interpolation/inter-linear.jpeg' title='inter-linear-01' style='max-width:600px'></img>
 <img src='./interpolation/inter-linear-02.jpeg' title='inter-linear-02' style='max-width:600px'>
 </div>
+<br>
 ## 三次样条插值
 &emsp;&emsp;本质是多项式插值，通过三次多项式插值构建三次样条曲线模拟连续像素值变化。
 ## 立方卷积插值
