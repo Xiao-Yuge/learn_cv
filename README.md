@@ -28,10 +28,7 @@
             (x_2-x)*f(Q12)*(y-y_1) +
             (x-x_1)*f(Q22)*(y-y_1))/((y2-y1)*(x2-x_1))
          = [x_2-x, x-x_1] * [[Q11, Q12], [Q21, Q22]] * [[y_2-y], [y-y_1]] / ((y_2-y_1)*(x_2-x_1))
-<p align='center'>
-<img src='./interpolation/inter-linear.jpeg' title='inter-linear-01' style='max-width:600px'></img>
-<img src='./interpolation/inter-linear-02.jpeg' title='inter-linear-02' style='max-width:600px'></img>
-</p>
+
 ## 三次样条插值
 &emsp;&emsp;本质是多项式插值，通过三次多项式插值构建三次样条曲线模拟连续像素值变化。
 ## 立方卷积插值
