@@ -1,3 +1,4 @@
+# coding:utf8
 import cv2
 import numpy as np
 
@@ -10,7 +11,17 @@ def conv_2d(image, kernel, stride=1):
     :param stride: 步长
     :return: 卷积结果
     """
-    return
+    k_height, k_width = kernel.shape
+    auto_pad = (int(k_height/2), int(k_width/2))
+    image = np.pad(image, auto_pad)
+    image_out = image.copy()
+    height, width = image.shape
+    # 可以改为滑动窗口算法
+    for y in range(0, height-k_height, stride):
+        for x in range(0, width-k_width, stride):
+            temp = image[y:y+k_width, x:x+k_height]
+            image_out[y][x] = np.sum(temp*kernel)
+    return image_out[auto_pad[0]:-auto_pad[0], auto_pad[1]:-auto_pad[1]]
 
 def cal_grad(gx, gy):
     """
@@ -19,7 +30,9 @@ def cal_grad(gx, gy):
     :param gy: y方向上边缘梯度
     :return: 灰度梯度与梯度方向
     """
-    return
+    grad = np.sqrt(np.square(gx) + np.square(gy))
+    grad_orien = np.arctan((gy+.1)/(gx+.1))
+    return grad, grad_orien
 
 def sobel(image):
     """
@@ -44,7 +57,12 @@ def sobel(image):
 def sobel_border(image, threshold):
     image_grad, image_grad_orien = sobel(image)
     image = np.where(image_grad > threshold, 255, 0)
-    image = np.cast(image, np.uint8)
-    cv2.imshow("sobel边缘", image)
+    image = image.astype(np.uint8)
+    cv2.imshow("sobel", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    image = cv2.imread(r"../lena.jpg")
+    sobel_border(image, 15)
