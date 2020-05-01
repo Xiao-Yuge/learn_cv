@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-def conv_2d(image, kernel, stride=1):
+def conv_2d(image, kernel_x, kernel_y, stride=1):
     """
     二维卷积操作
     :param image: 原图
@@ -11,7 +11,7 @@ def conv_2d(image, kernel, stride=1):
     :param stride: 步长
     :return: 卷积结果
     """
-    k_height, k_width = kernel.shape
+    k_height, k_width = kernel_x.shape
     auto_pad = (int(k_height/2), int(k_width/2))
     image = np.pad(image, auto_pad)
     image_out = image.copy()
@@ -20,8 +20,8 @@ def conv_2d(image, kernel, stride=1):
     for y in range(0, height-k_height, stride):
         for x in range(0, width-k_width, stride):
             temp = image[y:y+k_width, x:x+k_height]
-            image_out[y][x] = np.sum(temp*kernel)
-    return image_out[auto_pad[0]:-auto_pad[0], auto_pad[1]:-auto_pad[1]]
+            image_out[y][x], grad_orien = cal_grad(np.abs(np.sum(temp*kernel_x)), np.abs(np.sum(temp*kernel_y)))
+    return image_out[auto_pad[0]:-auto_pad[0], auto_pad[1]:-auto_pad[1]], grad_orien
 
 def cal_grad(gx, gy):
     """
@@ -31,7 +31,7 @@ def cal_grad(gx, gy):
     :return: 灰度梯度与梯度方向
     """
     grad = np.sqrt(np.square(gx) + np.square(gy))
-    grad_orien = np.arctan((gy+.1)/(gx+.1))
+    grad_orien = np.arctan((gy+1e-9)/(gx+1e-9))
     return grad, grad_orien
 
 def sobel(image):
@@ -44,14 +44,12 @@ def sobel(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     Gx = np.array([[-1, 0, 1],
                    [-2, 0, 2],
-                   [-1, 0, 1]], dtype=np.uint8)
+                   [-1, 0, 1]])
     Gy = np.array([[1, 2, 1],
                    [0, 0, 0],
-                   [-1, -2, -1]], dtype=np.uint8)
+                   [-1, -2, -1]])
 
-    image_border_x = conv_2d(image, Gx)
-    image_border_y = conv_2d(image, Gy)
-    image_grad, image_grad_orien = cal_grad(image_border_x, image_border_y)
+    image_grad, image_grad_orien = conv_2d(image, Gx, Gy)
     return image_grad, image_grad_orien
 
 def sobel_border(image, threshold):
@@ -65,4 +63,4 @@ def sobel_border(image, threshold):
 
 if __name__ == "__main__":
     image = cv2.imread(r"../lena.jpg")
-    sobel_border(image, 15)
+    sobel_border(image, 150)
