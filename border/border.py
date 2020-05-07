@@ -52,10 +52,21 @@ def sobel(image):
     image_grad, image_grad_orien = conv_2d(image, Gx, Gy)
     return image_grad, image_grad_orien
 
+
+def sobel_cv2(img):
+    x = cv2.Sobel(img, cv2.CV_16S, 1, 0)
+    y = cv2.Sobel(img, cv2.CV_16S, 0, 1)
+    absX = cv2.convertScaleAbs(x)
+    absY = cv2.convertScaleAbs(y)
+    dst = cv2.addWeighted(absX, 0.5, absY, 0.5, 0)
+    return dst
+
+
 def sobel_border(image, threshold):
-    image_grad, image_grad_orien = sobel(image)
-    image = np.where(image_grad > threshold, 255, 0)
-    image = image.astype(np.uint8)
+    # image_grad, image_grad_orien = sobel(image)
+    # image = np.where(image_grad > threshold, 255, 0)
+    # image = image.astype(np.uint8)
+    image = sobel_cv2(image)
     cv2.imshow("sobel", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
